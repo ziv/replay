@@ -19,9 +19,6 @@
     "paths": {
       "@xpr/replay": [
         "dist/xpr/replay"
-      ],
-      "replay": [
-        "dist/replay"
       ]
     },
     "target": "ES2022",
