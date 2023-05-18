@@ -1,54 +1,36 @@
+import { Observable, of, tap } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
-import { Observable, of, tap } from 'rxjs';
-import { get, set } from './storage-api';
-
-export enum ReplayMode {
-  Noop = 'Off',
-  Recording = 'Recording',
-  Replaying = 'Replaying'
-}
-
-const filterRequests = (req: HttpRequest<unknown>) => req.responseType === 'json';
+import ReplayService from './replay.service';
 
 @Injectable()
-export class ReplayInterceptor implements HttpInterceptor {
-  mode = ReplayMode.Noop;
+export default class ReplayInterceptor implements HttpInterceptor {
+  constructor(private readonly service: ReplayService) {
+  }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if ('GET' !== request.method) {
       return next.handle(request);
     }
+    const replay = this.service;
 
-    if (this.mode === ReplayMode.Recording && filterRequests(request)) {
+    if (replay.isRecording) {
       return next.handle(request).pipe(
         tap(e => {
           if (e instanceof HttpResponse) {
-            set(request.url, e);
+            replay.set(request.url, e);
           }
         })
       );
     }
 
-    if (this.mode === ReplayMode.Replaying) {
-      const res = get(request.url);
+    if (replay.isReplay) {
+      const res = replay.get(request.url);
       if (res) {
         return of(res.clone());
       }
     }
 
     return next.handle(request);
-  }
-
-  stop() {
-    this.mode = ReplayMode.Noop;
-  }
-
-  record() {
-    this.mode = ReplayMode.Recording;
-  }
-
-  replay() {
-    this.mode = ReplayMode.Replaying;
   }
 }

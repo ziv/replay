@@ -1,4 +1,29 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
+import { JsonPipe } from '@angular/common';
+
+@Component({
+  standalone: true,
+  selector: 'xpr-replay',
+  template: `
+    <div>
+      <button (click)="action()">x</button>
+      mode {{opened | json }}
+    </div>`,
+  styles: [''],
+  imports: [JsonPipe]
+})
+export default class ReplayComponent {
+  opened = false;
+
+  action() {
+    this.opened = !this.opened;
+    console.log('XXX');
+  }
+}
+
+
+/*
+import { ChangeDetectorRef, Component, Inject } from '@angular/core';
 import { ReplayApi } from './replay-api.provider';
 
 @Component({
@@ -29,18 +54,18 @@ import { ReplayApi } from './replay-api.provider';
       </ng-container>
       <!--          <ng-container *ngIf="!opened">-->
       <section>
-        <button (click)="open()">open</button>
-        <p>{{opened | json}}</p>
+        <button (click)="opened=true">open</button>
+        {{opened | json}}
       </section>
       <!--          </ng-container>-->
     </div>`,
   styles: [`
     :host {
-      /*position: absolute;*/
+      /!*position: absolute;*!/
       z-index: 1000;
       display: block;
-      /*height: 50px;*/
-      /*width: 50px;*/
+      /!*height: 50px;*!/
+      /!*width: 50px;*!/
       border: 5px solid red;
       background: palegoldenrod;
     }
@@ -48,8 +73,7 @@ import { ReplayApi } from './replay-api.provider';
     div {
       display: flex;
     }
-  `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  `]
 })
 export class ReplayUiComponent {
   opened = false;
@@ -70,4 +94,4 @@ export class ReplayUiComponent {
   record() {
 
   }
-}
+}*/

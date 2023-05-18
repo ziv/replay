@@ -1,27 +1,26 @@
 import { ReplayAction, ReplayApi } from './replay-api.provider';
-import { ReplayMode } from './replay.interceptor';
+import { ReplayMode } from './replay.service';
 
 type CSS = Partial<CSSStyleDeclaration>;
-
-const rootStyle: CSS = {
-  position: 'absolute',
-  top: '0',
-  right: '0'
-};
-
-const widgetStyle: CSS = {
-  position: 'absolute',
-  display: 'flex',
-  background: 'red',
-  border: '1px solid green',
-  top: '0',
-  right: '0'
-};
-
-const sectionStyle: CSS = {
-  padding: '2px',
-  background: 'yellow',
-  display: 'flex',
+const Styles = {
+  Root: {
+    position: 'absolute',
+    top: '0',
+    right: '0'
+  },
+  Replay: {
+    position: 'absolute',
+    display: 'flex',
+    background: 'red',
+    border: '1px solid green',
+    top: '0',
+    right: '0'
+  },
+  Section: {
+    padding: '2px',
+    background: 'yellow',
+    display: 'flex',
+  }
 };
 
 const button = (label: string, alt: string, action: ReplayAction) => {
@@ -44,12 +43,13 @@ const container = (type: string, styles: CSS, ...childs: HTMLElement[]) => {
   return el;
 }
 
-export default function replayUi({stop, record, replay, save, load, status}: ReplayApi) {
+export default function replayUi({stop, record, replay, save, load, status, clear}: ReplayApi) {
   const stp = button('⏹', 'stop', stop);
   const rec = button('⏺', 'record', record);
   const rep = button('⏵', 'replay', replay);
   const sav = button('↓', 'save', save);
   const lod = button('↑', 'load', load);
+  const clr = button('c', 'clear', clear);
 
   const render = () => {
     const mode = status();
@@ -58,10 +58,12 @@ export default function replayUi({stop, record, replay, save, load, status}: Rep
     rep.disabled = mode === ReplayMode.Replaying;
   };
 
-  const ui = container('div', rootStyle,
-    container('main', widgetStyle,
-      container('section', sectionStyle, stp, rec, rep),
-      container('section', sectionStyle, sav, lod),
+
+  const ui = container('div', Styles.Root,
+    container('main', Styles.Replay,
+      container('section', Styles.Section, stp, rec, rep),
+      container('section', Styles.Section, sav, lod),
+      container('section', Styles.Section, clr),
     ),
   );
   ui.addEventListener('click', render);
