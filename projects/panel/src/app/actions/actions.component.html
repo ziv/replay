@@ -1,0 +1,4 @@
+<button [disabled]="!canRecord" (click)="action.emit(actions.StartRecord)">⏺</button>
+<button [disabled]="!canRecord" (click)="action.emit(actions.StartReplay)">⏸</button>
+<button [disabled]="!canReplay" (click)="action.emit(actions.StartReplay)">⏵</button>
+<button [disabled]="canReplay" (click)="action.emit(actions.StartReplay)">⏵⏵</button>

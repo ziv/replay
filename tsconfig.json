@@ -17,8 +17,17 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "paths": {
+      "@xpr/chrome": [
+        "dist/xpr/chrome"
+      ],
       "@xpr/replay": [
         "dist/xpr/replay"
+      ],
+      "@xpr/zair": [
+        "dist/xpr/zair"
+      ],
+      "chrome-api": [
+        "dist/chrome-api"
       ]
     },
     "target": "ES2022",

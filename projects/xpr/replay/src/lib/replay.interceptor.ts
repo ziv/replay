@@ -1,81 +1,54 @@
-import {Injectable} from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor, HttpResponse
-} from '@angular/common/http';
-import {Observable, of, tap} from 'rxjs';
-
-export type Req = HttpRequest<unknown>;
+import { Injectable } from '@angular/core';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
+import { Observable, of, tap } from 'rxjs';
+import { get, set } from './storage-api';
 
 export enum ReplayMode {
-  Noop,
-  Recording,
-  Replaying
+  Noop = 'Off',
+  Recording = 'Recording',
+  Replaying = 'Replaying'
 }
 
-export interface ReplayOptions {
-  mode: ReplayMode;
-}
+const filterRequests = (req: HttpRequest<unknown>) => req.responseType === 'json';
 
-const filterRequests = (req: Req) => req.responseType === 'json';
-
-@Injectable({providedIn: 'root'})
+@Injectable()
 export class ReplayInterceptor implements HttpInterceptor {
-  cache = new Map<string, unknown>();
+  mode = ReplayMode.Noop;
 
-  opts: ReplayOptions = {
-    mode: ReplayMode.Noop
-  };
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    if ('GET' !== request.method) {
+      return next.handle(request);
+    }
 
-  get isRecord() {
-    return this.opts.mode === ReplayMode.Recording;
-  }
-
-  get isReplay() {
-    return this.opts.mode === ReplayMode.Replaying;
-  }
-
-  constructor() {
-    // @ts-ignore
-    window['zi'] = window['zi'] || {};
-    // @ts-ignore
-    window['zi']['replay'] = this;
-  }
-
-  intercept(request: Req, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // recording mode
-    if (this.isRecord && filterRequests(request)) {
+    if (this.mode === ReplayMode.Recording && filterRequests(request)) {
       return next.handle(request).pipe(
         tap(e => {
           if (e instanceof HttpResponse) {
-            this.cache.set(request.url, e);
+            set(request.url, e);
           }
         })
       );
     }
-    // replaying mode
-    if (this.isReplay && this.cache.has(request.url)) {
-      return of(this.cache.get(request.url) as HttpResponse<unknown>);
+
+    if (this.mode === ReplayMode.Replaying) {
+      const res = get(request.url);
+      if (res) {
+        return of(res.clone());
+      }
     }
-    // default mode
+
     return next.handle(request);
   }
 
   stop() {
-    this.opts.mode = ReplayMode.Noop;
+    this.mode = ReplayMode.Noop;
   }
 
   record() {
-    this.opts.mode = ReplayMode.Recording;
+    this.mode = ReplayMode.Recording;
   }
 
   replay() {
-    this.opts.mode = ReplayMode.Replaying;
-  }
-
-  status() {
-    console.log('ZI Replay mode: ', this.opts.mode);
+    this.mode = ReplayMode.Replaying;
   }
 }

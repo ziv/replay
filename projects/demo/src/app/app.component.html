@@ -1,0 +1,12 @@
+<h1>A lot of items that can be cached</h1>
+<button (click)="load()">Load</button>
+
+<section>
+  <p>Number of items: {{items.length}}</p>
+  <ng-container *ngIf="items.length">
+    <p>Items:</p>
+    <ul>
+      <li *ngFor="let i of items">{{i | json}}</li>
+    </ul>
+  </ng-container>
+</section>

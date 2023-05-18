@@ -1,9 +1,3 @@
-<section class="actions">
-  <button [disabled]="!recording" (click)="record()">START RECORD</button>
-  <button [disabled]="recording" (click)="stop()">STOP RECORD</button>
-  <button (click)="replay()">REPLAY</button>
-</section>
-
-<section class="log">
-  <p *ngFor="let msg of log">{{msg}}</p>
-</section>
+<h1>replay</h1>
+<app-actions [state]="state" (action)="handle($event)"></app-actions>
+<app-status [state]="state"></app-status>

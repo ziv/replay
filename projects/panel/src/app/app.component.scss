@@ -1,7 +1,16 @@
-.actions {
-
+h1 {
+  margin: .5em 0;
+  font-family: 'Ubuntu Mono', monospace;
+  font-weight: normal;
+  font-size: 1.5em;
+  background: #6792ff;
+  padding: .1em .5em;
 }
 
-.log {
+app-actions {
+  background-color: #ec8da0;
+}
 
+app-status {
+  background-color: #e582e5;
 }

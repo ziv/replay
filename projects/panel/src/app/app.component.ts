@@ -1,30 +1,66 @@
-/// <reference types="@types/chrome" />
-import { Component } from '@angular/core';
-import Request = chrome.devtools.network.Request;
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {Subscription} from "rxjs";
+import {devtools, DevtoolsActions, DevtoolsMode, DevToolsState} from "chrome-api";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent {
-  log: string[] = [];
-  recording = false;
+export class AppComponent implements OnInit, OnDestroy {
+  // private devtools = devtools(''); // todo
+  private sub?: Subscription;
 
-  record() {
-    this.recording = true;
-    const callback = (r: Request) => {
+  state: DevToolsState = {
+    mode: DevtoolsMode.Off,
+    size: 0,
+  };
 
-    };
-    chrome.devtools.network.onRequestFinished.addListener(callback);
+  get canReplay(): boolean {
+    return this.state.mode === DevtoolsMode.Off && this.state.size > 0;
   }
 
-  stop() {
-    this.recording = false;
-    // chrome.devtools.network.onRequestFinished.removeListener()
+  get canRecord(): boolean {
+    return this.state.mode === DevtoolsMode.Off;
   }
 
-  replay() {
+  get canStop(): boolean {
+    return this.state.mode === DevtoolsMode.Recording;
+  }
+
+  constructor(public cdr: ChangeDetectorRef) {
+    // devtools('');
+  }
+
+  ngOnInit() {
+    // this.sub = this.devtools.changes.subscribe(state => {
+    //   this.state = state;
+    //   this.cdr.detectChanges();
+    // });
+  }
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
+
+  handle(action: DevtoolsActions) {
+    console.log(action);
+  }
+
+  startRecord() {
+    // this.devtools.startRecord();
+  }
+
+  stopRecord() {
+    // this.devtools.stopRecord();
+  }
+
+  startReplay() {
+    console.log('replay');
+  }
+
+  stopReplay() {
     console.log('replay');
   }
 }

@@ -1,0 +1,24 @@
+{
+  "name": "replay",
+  "description": "Record and play HTTP requests",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_icon": "logo.png"
+  },
+  "background": {
+    "service_worker": "sw.js",
+    "type": "module"
+  },
+  "devtools_page": "dt.html",
+  "permissions": [
+    "webRequest",
+    "debugger",
+    "tabs",
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://dev.zoominfo.com/*"
+  ]
+}

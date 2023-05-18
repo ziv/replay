@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+
+button {
+  font-size: 1em;
+  line-height: 1.5em;
+  width: 2em;
+  height: 2em;
+  border: 1px solid white;
+  border-radius: .5em;
+
+  &:hover {
+    background-color: green;
+  }
+}
